@@ -12,5 +12,8 @@ router.get('/', (req, res) => {
 router.patch('/:id', (req, res) => {
   TodoController.updateTodo(req, res);
 });
+router.delete('/:id', (req, res) => {
+  TodoController.deleteTodo(req, res);
+});
 
 export default router;

@@ -2,19 +2,13 @@ import { Todo } from '../models/todo.js';
 
 class todoController {
   constructor() {
-    // hold todo objects in array
     this.TODOS = [];
   }
 
   createTodo(req, res) {
-    // get data from POST request
     const task = req.body.task;
-    // create new object via Todo model
-    // model constructor uses uniq id and task name as parameter
     const newTodo = new Todo(Math.random().toString(), task);
-    // add new todo to todos array
     this.TODOS.push(newTodo);
-    // create a correct response
     res.json({
       message: 'created new todo object',
       newTask: newTodo,
@@ -28,10 +22,22 @@ class todoController {
   updateTodo(req, res) {
     const todoId = req.params.id;
     const updatedTask = req.body.task;
+    const todoIndex = this.TODOS.findIndex((todo) => todo.id === todoId);
+    if (todoIndex < 0) {
+      res.json({ message: 'Could not find todo with such index' });
+      throw new Error('Could not find todo');
+    }
+    this.TODOS[todoIndex] = new Todo(this.TODOS[todoIndex].id, updatedTask);
+    res.json({
+      message: 'Todo is updated',
+      updatedTask: this.TODOS[todoIndex],
+    });
+  }
 
-    console.log(req.body);
-    console.log(req.params);
-
+  deleteTodo(req, res) {
+    // get id from url params
+    const todoId = req.params.id;
+    // search for matching todo's index in array
     const todoIndex = this.TODOS.findIndex((todo) => todo.id === todoId);
 
     if (todoIndex < 0) {
@@ -41,10 +47,11 @@ class todoController {
       throw new Error('Could not find todo');
     }
 
-    this.TODOS[todoIndex] = new Todo(this.TODOS[todoIndex].id, updatedTask);
+    // remove found todo from array
+    const deletedTodo = this.TODOS.splice(todoIndex, 1)[0];
     res.json({
-      message: 'Todo is updated',
-      updatedTask: this.TODOS[todoIndex],
+      message: 'Todo is deleted',
+      deletedTask: deletedTodo,
     });
   }
 }
